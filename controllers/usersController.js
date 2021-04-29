@@ -1,8 +1,9 @@
 const db = require("../database/models");
 const jwt = require('jsonwebtoken');
 const bcryptjs = require("bcryptjs");
+const fs = require('fs');
 const User = db.User;
-const secret = '!q.1W2.e3.r4'
+const key = fs.readFileSync('./keys/private.pem');
 
 const usersController = {
 
@@ -20,7 +21,7 @@ const usersController = {
                 ...req.body,                           
                password: bcryptjs.hashSync(req.body.password, 10)       
             });
-            const token = jwt.sign(user.toJSON(), secret)
+            const token = jwt.sign(user.toJSON(), key)
             return res.send({user,token})
 
         }catch(error){
@@ -36,7 +37,7 @@ const usersController = {
         }
         let passwordCheck = bcryptjs.compareSync(req.body.password, user.password);
         if(passwordCheck){
-            const token = jwt.sign(user.toJSON(), secret);
+            const token = jwt.sign(user.toJSON(), key);
             return res.send({user, token})
         }
         return res.send({error: 'Wrong password/user'})
