@@ -4,7 +4,6 @@ const bcryptjs = require("bcryptjs");
 const User = db.User;
 const secret = '!q.1W2.e3.r4'
 
-
 const usersController = {
 
     register: async function (req,res) {

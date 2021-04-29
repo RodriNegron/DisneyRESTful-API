@@ -6,7 +6,7 @@ const personajesController = {
     'list': async (req,res) =>{
         try{
             let characters = await Characters.findAll({
-                attributes:["nombre","imagen"]
+                attributes:["name","image"]
             })
             let response ={
                 meta: {
