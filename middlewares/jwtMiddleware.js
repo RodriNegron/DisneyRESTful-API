@@ -1,11 +1,16 @@
+const fs = require('fs');
 const jwt = require('jsonwebtoken');
+const key = fs.readFileSync('./keys/public.pem') 
 
 module.exports = (req, res, next) => {
-
-    const user = jwt.decode(req.headers.authorization.replace('Bearer ', ''));
-    if (!user) {
-        return res.send({ error: "Can't verify the user" });
+    try{
+        const {authorization} =req.headers
+        const user = jwt.verify(authorization,key);
+        req.user=user;
+        next();
+    }catch(error){
+        console.error(error);
+        res.status(401).json({message:"Unauthorized"})
     }
-    req.user = user;
-    return next();
+
 }
