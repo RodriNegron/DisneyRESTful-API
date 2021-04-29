@@ -61,6 +61,44 @@ const personajesController = {
         }catch{(error)
             console.log(error);
         }
+    },
+
+    update: async (req,res) =>{
+        try{
+            let character = await Characters.update(req.body,{
+                where:{id:req.params.id}
+            })
+            let response={
+                meta: {
+                    status: 200,
+                    url: '/characters/update'
+                },
+                data:"character updated successfully"
+            }
+            res.json(response);
+        }catch(error){
+            console.log(error);
+        }
+    },
+
+    destroy: async (req,res) =>{
+        try{
+            await Characters.destroy({
+				where:{
+					id: req.params.id
+				}
+			});
+            let response={
+                meta: {
+                    status: 200,
+                    url: '/characters/delete'
+                },
+                data:"character deleted successfully"
+            }
+			res.json(response);
+		}catch (error){
+			console.log(error);
+        }
     }
 
 }
