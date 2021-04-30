@@ -4,11 +4,16 @@ const bcryptjs = require("bcryptjs");
 const fs = require('fs');
 const User = db.User;
 const key = fs.readFileSync('./keys/private.pem');
+const {validationResult} = require('express-validator'); 
 
 const usersController = {
 
     register: async function (req,res) {
         try{
+            const errors=validationResult(req);
+            if(!errors.isEmpty()){
+                return res.status(422).json({errors: errors.array()})
+            }
             let createdUser = await User.findOne({       
                 where: { 
                     email: req.body.email
