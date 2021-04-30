@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const db = require('../database/models');
 const Characters = db.Character;
 
@@ -5,12 +6,21 @@ const personajesController = {
 
     'list': async (req,res) =>{
         try{
+            let filter = {};
+            let { q, age_ } = req.query
+            if(q){
+                filter.name={[Op.like]: `%${q}%`}
+            }
+            if(age_){
+                filter.age=age_
+            }
             let {page,size}=req.query;
             if(!page){page=1};
-            if(!size){size=50};
+            if(!size){size=30};
             const limit = parseInt(size);
             const offset =(page-1)*size;
             let characters = await Characters.findAll({
+                where:filter,
                 attributes:["name","image"],
                 limit: limit,
                 offset:offset 
@@ -19,7 +29,7 @@ const personajesController = {
                 meta: {
                     satus:200,
                     total: characters.length,
-                    url: 'api/characters'
+                    url: 'api/characters',
                 },
                 page,
                 data: characters
@@ -60,7 +70,7 @@ const personajesController = {
             })
             let response ={
                     meta: {
-                        status: 200,
+                        status: 201,
                         url: 'api/characters/create'
                     },
                     data:newCharacter
