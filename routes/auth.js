@@ -11,15 +11,14 @@ const createToken = (payload)=> jwt.sign(payload,key,signOptions);
 const auth = async (req, res) =>{
     try{
         const user = await db.User.findOne({where: {email: req.body.email}});
-        if(!user) res.status(401).json({message: "User not found"});
-        const passwordCheck =bcryptjs.compareSync(req.body.password, user.password)
-        if(!passwordCheck) res.status(401).json({message: "Unauthorized"});
+        const passwordCheck = user == null ? false : bcryptjs.compareSync(req.body.password, user.password)
+        if(!(user && passwordCheck)) return res.status(401).json({message: "Unauthorized"});
         const {id} = user;
         const token = createToken({id,user});
         res.json({JWT: token});
 
-    }catch(e){
-        console.log(e)
+    }catch(error){
+        console.error(error);
     }
 }
 

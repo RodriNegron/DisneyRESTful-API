@@ -5,20 +5,28 @@ const personajesController = {
 
     'list': async (req,res) =>{
         try{
+            let {page,size}=req.query;
+            if(!page){page=1};
+            if(!size){size=50};
+            const limit = parseInt(size);
+            const offset =(page-1)*size;
             let characters = await Characters.findAll({
-                attributes:["name","image"]
+                attributes:["name","image"],
+                limit: limit,
+                offset:offset 
             })
             let response ={
                 meta: {
                     satus:200,
                     total: characters.length,
-                    url: '/characters'
+                    url: 'api/characters'
                 },
+                page,
                 data: characters
             }
             res.json(response);
         }catch(error){
-            console.log(error);
+            console.error(error);
         }
     },
 
@@ -35,7 +43,7 @@ const personajesController = {
             let response ={
                     meta: {
                         satus:200,
-                        url: '/characters/:id'
+                        url: 'api/characters/:id'
                     },
                     data:character
                 }
@@ -53,7 +61,7 @@ const personajesController = {
             let response ={
                     meta: {
                         status: 200,
-                        url: '/characters/create'
+                        url: 'api/characters/create'
                     },
                     data:newCharacter
                 }
@@ -65,15 +73,15 @@ const personajesController = {
 
     update: async (req,res) =>{
         try{
-            let character = await Characters.update(req.body,{
+            await Characters.update(req.body,{
                 where:{id:req.params.id}
             })
             let response={
                 meta: {
                     status: 200,
-                    url: '/characters/update'
+                    url: 'api/characters/update'
                 },
-                data:"character updated successfully"
+                data:`character ${req.params.id} updated successfully`
             }
             res.json(response);
         }catch(error){
@@ -91,9 +99,9 @@ const personajesController = {
             let response={
                 meta: {
                     status: 200,
-                    url: '/characters/delete'
+                    url: 'api/characters/delete'
                 },
-                data:"character deleted successfully"
+                data:`character ${req.params.id} deleted successfully`
             }
 			res.json(response);
 		}catch (error){

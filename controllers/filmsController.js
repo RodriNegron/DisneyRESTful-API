@@ -5,14 +5,21 @@ const filmsController = {
 
     'list':  async (req,res)=>{
         try{
+            let {page,size}=req.query;
+            if(!page){page=1};
+            if(!size){size=30};
+            const limit = parseInt(size);
+            const offset =(page-1)*size;
             let films = await Films.findAll({
-                attributes:["title","image","release_date"]
+                attributes:["title","image","release_date"],
+                limit: limit,
+                offset:offset 
             });
             let response ={
                 meta: {
                     satus:200,
                     total: films.length,
-                    url: '/films'
+                    url: 'api/films'
                 },
                 data: films
             }
@@ -35,7 +42,7 @@ const filmsController = {
             let response ={
                 meta: {
                     satus:200,
-                    url: '/films/:id'
+                    url: 'api/films/:id'
                 },
                 data:film
             }
@@ -53,7 +60,7 @@ const filmsController = {
             let response ={
                     meta: {
                         status: 200,
-                        url: '/films/create'
+                        url: 'api/films/create'
                     },
                     data:newFilm
                 }
@@ -71,7 +78,7 @@ const filmsController = {
             let response={
                 meta: {
                     status: 200,
-                    url: '/films/update'
+                    url: 'api/films/update'
                 },
                 data:"film updated successfully"
             }
@@ -91,7 +98,7 @@ const filmsController = {
             let response={
                 meta: {
                     status: 200,
-                    url: '/films/delete'
+                    url: 'api/films/delete'
                 },
                 data:"film deleted successfully"
             }

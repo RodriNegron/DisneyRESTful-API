@@ -20,7 +20,7 @@ const usersController = {
                 }
             });
             if(createdUser){      
-                return res.send({error: 'User already exists!'})                       
+                return res.status(401).json({error: 'User already exists!'})                       
             }
             let user = await User.create({                                               
                 ...req.body,                           
@@ -31,21 +31,20 @@ const usersController = {
 
         }catch(error){
 
-            console.log(error)
+            console.error(error)
         }
     },
 
     login: async function (req, res) {
         const user = await User.findOne({where: {email: req.body.email}});
-        if(!user) {
-            return res.send({error: 'User not registered'})
+        let passwordCheck = user == null ? false : bcryptjs.compareSync(req.body.password, user.password);
+        if(!(user && passwordCheck)){
+            return res.status(401).json({
+                error: 'Invalid user or password'
+            })
         }
-        let passwordCheck = bcryptjs.compareSync(req.body.password, user.password);
-        if(passwordCheck){
-            const token = jwt.sign(user.toJSON(), key);
-            return res.send({user, token})
-        }
-        return res.send({error: 'Wrong password/user'})
+        const token = jwt.sign(user.toJSON(), key);
+        res.send({user, token})
     }
 
 }
