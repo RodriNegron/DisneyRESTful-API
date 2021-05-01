@@ -1,40 +1,26 @@
 const { Op } = require('sequelize');
 const db = require('../database/models');
+const {getPagination, getPagingData} = require("../services/pagination");
 const Characters = db.Character;
 
 const personajesController = {
 
     'list': async (req,res) =>{
         try{
-            let filter = {};
-            let { q, age_ } = req.query
-            if(q){
-                filter.name={[Op.like]: `%${q}%`}
-            }
-            if(age_){
-                filter.age=age_
-            }
-            let {page,size}=req.query;
-            if(!page){page=1};
-            if(!size){size=30};
-            const limit = parseInt(size);
-            const offset =(page-1)*size;
-            let characters = await Characters.findAll({
-                where:filter,
+            const { page, size, name, age } = req.query;
+            var condition = name ? { name: { [Op.like]: `%${name}%` } } : null;
+            condition= age ? {age:age} : condition;
+            const { limit, offset } = getPagination(page, size);
+            
+            data = await Characters.findAndCountAll({
                 attributes:["name","image"],
-                limit: limit,
-                offset:offset 
+                distinct:true,
+                where: condition, 
+                limit,
+                offset
             })
-            let response ={
-                meta: {
-                    satus:200,
-                    total: characters.length,
-                    url: 'api/characters',
-                },
-                page,
-                data: characters
-            }
-            res.json(response);
+            const response = getPagingData(data, page, limit);
+            res.json(response);   
         }catch(error){
             res.status(500).json(error)
         }
