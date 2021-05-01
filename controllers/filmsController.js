@@ -1,6 +1,7 @@
 const { Op } = require('sequelize');
 const db = require('../database/models');
 const {validationResult} = require('express-validator'); 
+const {getPagination, getPagingData} = require("../services/pagination"); //terminar de implementar paginacion 
 const Films = db.Film;
 const Genres = db.Genre;
 
@@ -52,11 +53,18 @@ const filmsController = {
         try{
             let film = await Films.findByPk(req.params.id,{
                 include:[{
+                    model: db.Genre,
+                    as:"genre",
+                    attributes: ["name"] 
+                },{
                     model: db.Character,
                     as:"characters",
                     attributes: ["name"],
-                    through: {attributes: []} 
-                }]
+                    through: {attributes: []}
+                }],
+                attributes: {
+                    exclude: ["genre_id"]
+                }
             })
             let response ={
                 meta: {
@@ -68,6 +76,7 @@ const filmsController = {
             res.json(response)
         }catch(error){
             res.status(500).json(error)
+            console.log(error)
         }
     },
 
