@@ -1,6 +1,6 @@
 # Disney API RESTful
 
-- Repositorio público donde se derrollo una API de los distintos personasajes y peliculas de Disney
+- Repositorio público donde se derrollo una API que permite conocer los distintos personasajes y peliculas de Disney
 
 # Documentacion
 
