@@ -4,5 +4,5 @@ Repositorio público donde se derrollo una API de los distintos personasajes y p
 
 [Documentacion](https://documenter.getpostman.com/view/15419986/TzRLkVr8)
 
-##Autor
+# Autor
 Rodrigo Negron
