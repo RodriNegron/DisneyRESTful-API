@@ -36,7 +36,7 @@ const personajesController = {
             }
             res.json(response);
         }catch(error){
-            console.error(error);
+            res.status(500).json(error)
         }
     },
 
@@ -59,7 +59,7 @@ const personajesController = {
                 }
                 res.json(response);    
         }catch(error){
-            console.log(error);
+            res.status(500).json(error)
         }
     },
 
@@ -76,8 +76,8 @@ const personajesController = {
                     data:newCharacter
                 }
                 res.json(response);
-        }catch{(error)
-            console.log(error);
+        }catch(error){
+            res.status(500).json(error)
         }
     },
 
@@ -95,7 +95,7 @@ const personajesController = {
             }
             res.json(response);
         }catch(error){
-            console.log(error);
+            res.status(500).json(error)
         }
     },
 
@@ -115,7 +115,7 @@ const personajesController = {
             }
 			res.json(response);
 		}catch (error){
-			console.log(error);
+			res.status(500).json(error)
         }
     }
 

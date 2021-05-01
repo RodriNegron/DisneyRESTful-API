@@ -12,7 +12,7 @@ const usersController = {
         try{
             const errors=validationResult(req);
             if(!errors.isEmpty()){
-                return res.status(422).json({errors: errors.array()})
+                return res.status(400).json({errors: errors.array()})
             }
             let createdUser = await User.findOne({       
                 where: { 
@@ -30,8 +30,7 @@ const usersController = {
             return res.send({user,token})
 
         }catch(error){
-
-            console.error(error)
+            res.status(500).json(error)
         }
     },
 

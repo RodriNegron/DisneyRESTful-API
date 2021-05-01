@@ -1,5 +1,6 @@
 const { Op } = require('sequelize');
 const db = require('../database/models');
+const {validationResult} = require('express-validator'); 
 const Films = db.Film;
 const Genres = db.Genre;
 
@@ -66,12 +67,16 @@ const filmsController = {
             }
             res.json(response)
         }catch(error){
-            console.log(error)
+            res.status(500).json(error)
         }
     },
 
     create: async (req, res) =>{
         try{
+            const errors=validationResult(req);
+            if(!errors.isEmpty()){
+                return res.status(400).json({errors: errors.array()})
+            }
             let newFilm = await Films.create({
                 ...req.body
             })
@@ -84,7 +89,7 @@ const filmsController = {
                 }
                 res.json(response);
         }catch(error){
-            console.log(error);
+            res.status(500).json(error)
         }
     },
 
@@ -102,7 +107,7 @@ const filmsController = {
             }
             res.json(response);
         }catch(error){
-            console.log(error);
+            res.status(500).json(error)
         }
     },
 
@@ -122,7 +127,7 @@ const filmsController = {
             }
 			res.json(response);
 		}catch (error){
-			console.log(error);
+			res.status(500).json(error)
         }
     }
 
