@@ -1,49 +1,36 @@
 const { Op } = require('sequelize');
 const db = require('../database/models');
 const {validationResult} = require('express-validator'); 
-const {getPagination, getPagingData} = require("../services/pagination"); //terminar de implementar paginacion 
+const {getPagination, getPagingData} = require("../services/pagination");
 const Films = db.Film;
 const Genres = db.Genre;
-
 
 const filmsController = {
 
     'list':  async (req,res)=>{
         try{
-            let filter = {};
-            let { g,q } = req.query;
-            if(g){
-                let genre = await Genres.findByPk(g);
-                if(!genre) res.status(404).json({error: 'Invalid genre id'})
-                filter.genre_id = genre.id
+            const { page, size, title, genre} = req.query;
+            var condition = title ? { title: { [Op.like]: `%${title}%` } } : {};
+            if(genre){
+                let genero = await Genres.findOne({
+                    where:{name:{ [Op.like]: `%${genre}%` } }
+                });
+                if(!genero) res.status(404).json({error: 'Invalid genre name'})
+                condition.genre_id=genero.id
             }
-            if(q){
-                filter.title={[Op.like]: `%${q}%`}
-            }
-            let {page,size}=req.query;
-            if(!page){page=1};
-            if(!size){size=30};
-            const limit = parseInt(size);
-            const offset =(page-1)*size;
-            let sort_by='ASC'
-            if(req.query.sort_by){sort_by= req.query.sort_by}
-            let films = await Films.findAll({
-                where:filter,
+            
+            const { limit, offset } = getPagination(page, size);
+            
+            data = await Films.findAndCountAll({
                 attributes:["title","image","release_date"],
-                limit: limit,
-                offset:offset,
-                order:[['release_date', sort_by]]
-                
-            });
-            let response ={
-                meta: {
-                    satus:200,
-                    total: films.length,
-                    url: 'api/films'
-                },
-                data: films
-            }
-            res.json(response);
+                distinct:true,
+                where: condition, 
+                limit,
+                offset
+            })
+            const response = getPagingData(data, page, limit);
+            res.json(response);   
+
         }catch(error){
             res.status(500).json(error);
         }
@@ -76,7 +63,6 @@ const filmsController = {
             res.json(response)
         }catch(error){
             res.status(500).json(error)
-            console.log(error)
         }
     },
 
@@ -105,7 +91,9 @@ const filmsController = {
     update: async (req,res) =>{
         try{
             await Films.update(req.body,{
-                where:{id:req.params.id}
+                where:{
+                    id:req.params.id
+                }
             })
             let response={
                 meta: {
