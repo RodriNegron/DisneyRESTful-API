@@ -1,9 +1,6 @@
 const db = require("../database/models");
-const jwt = require('jsonwebtoken');
 const bcryptjs = require("bcryptjs");
-const fs = require('fs');
 const User = db.User;
-const key = fs.readFileSync('./keys/private.pem');
 const {validationResult} = require('express-validator'); 
 
 const usersController = {
@@ -26,8 +23,10 @@ const usersController = {
                 ...req.body,                           
                password: bcryptjs.hashSync(req.body.password, 10)       
             });
-            const token = jwt.sign(user.toJSON(), key)
-            return res.send({user,token})
+            return res.send({
+                Name:user.name,
+                Email:user.email
+            })
 
         }catch(error){
             res.status(500).json(error)
@@ -42,8 +41,7 @@ const usersController = {
                 error: 'Invalid user or password'
             })
         }
-        const token = jwt.sign(user.toJSON(), key);
-        res.send({user, token})
+        res.send({LoggedUser: user.name})
     }
 
 }
