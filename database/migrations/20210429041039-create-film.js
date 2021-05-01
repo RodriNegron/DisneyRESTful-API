@@ -9,23 +9,25 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       image: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false,
       },
       title: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false,
       },
       release_date: {
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        allowNull: false,
+        isDate: true
       },
       rating: {
         type: Sequelize.FLOAT,
-        validate: {
-          min: 0,
-          max: 5
-        }
+        allowNull: false,
       },
       genre_id: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        allowNull: false,
       },      
       createdAt: {
         allowNull: false,
