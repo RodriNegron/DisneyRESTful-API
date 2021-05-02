@@ -12,13 +12,13 @@ const auth = async (req, res) =>{
     try{
         const user = await db.User.findOne({where: {email: req.body.email}});
         const passwordCheck = user == null ? false : bcryptjs.compareSync(req.body.password, user.password)
-        if(!(user && passwordCheck)) return res.status(401).json({message: "Unauthorized"});
+        if(!(user && passwordCheck)) res.status(401).json({message: "Unauthorized"});
         const {id} = user;
         const token = createToken({id,user});
         res.json({JWT: token});
 
     }catch(error){
-        res.status(500).json({message:"Unauthorized / invalid token"});
+        res.status(500).json(error);
     }
 }
 

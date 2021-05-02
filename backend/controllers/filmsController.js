@@ -9,14 +9,24 @@ const filmsController = {
 
     'list':  async (req,res)=>{
         try{
-            const { page, size, title, genre} = req.query;
+            const findOptions= [];
+            const { page, size, title, genre, sort} = req.query;
             var condition = title ? { title: { [Op.like]: `%${title}%` } } : {};
             if(genre){
                 let genero = await Genres.findOne({
                     where:{name:{ [Op.like]: `%${genre}%` } }
                 });
-                if(!genero) res.status(404).json({error: 'Invalid genre name'})
+                if(!genero) res.status(404).json({error: 'Invalid genre'})
                 condition.genre_id=genero.id
+            }
+            if(sort){
+                let field = sort;
+                let order = 'ASC';
+                if (sort.charAt(0) === '-'){
+                    order = 'DESC';
+                    field = sort.substring(1);
+                }
+                findOptions.push([field.trim(),order]);
             }
             
             const { limit, offset } = getPagination(page, size);
@@ -26,13 +36,16 @@ const filmsController = {
                 distinct:true,
                 where: condition, 
                 limit,
-                offset
+                offset,
+                order: findOptions
             })
             const response = getPagingData(data, page, limit);
             res.json(response);   
 
         }catch(error){
-            res.status(500).json(error);
+            res.status(500).json({
+                message: 'Error'
+            });
         }
     },
     

@@ -16,14 +16,12 @@ const usersController = {
                     email: req.body.email
                 }
             });
-            if(createdUser){      
-                return res.status(401).json({error: 'User already exists!'})                       
-            }
+            if(createdUser) return res.status(401).json({error: 'User already exists!'});                     
             let user = await User.create({                                               
                 ...req.body,                           
                password: bcryptjs.hashSync(req.body.password, 10)       
             });
-            return res.send({
+            res.json({
                 Name:user.name,
                 Email:user.email
             })
@@ -31,19 +29,7 @@ const usersController = {
         }catch(error){
             res.status(500).json(error)
         }
-    },
-
-    login: async function (req, res) {
-        const user = await User.findOne({where: {email: req.body.email}});
-        let passwordCheck = user == null ? false : bcryptjs.compareSync(req.body.password, user.password);
-        if(!(user && passwordCheck)){
-            return res.status(401).json({
-                error: 'Invalid user or password'
-            })
-        }
-        res.send({LoggedUser: user.name})
     }
-
 }
 
 module.exports=usersController;
