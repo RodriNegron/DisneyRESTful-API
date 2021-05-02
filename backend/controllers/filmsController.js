@@ -16,7 +16,7 @@ const filmsController = {
                 let genero = await Genres.findOne({
                     where:{name:{ [Op.like]: `%${genre}%` } }
                 });
-                if(!genero) res.status(404).json({error: 'Invalid genre'})
+                if(!genero) return res.status(404).json({error: 'Invalid genre'})
                 condition.genre_id=genero.id
             }
             if(sort){
