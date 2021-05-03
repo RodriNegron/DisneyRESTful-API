@@ -9,6 +9,7 @@ const filmsController = {
 
     'list':  async (req,res)=>{
         try{
+            const { baseUrl: endpoint } = req;
             const findOptions= [];
             const { page, size, title, genre, sort} = req.query;
             var condition = title ? { title: { [Op.like]: `%${title}%` } } : {};
@@ -39,7 +40,7 @@ const filmsController = {
                 offset,
                 order: findOptions
             })
-            const response = getPagingData(data, page, limit);
+            const response = getPagingData(data, page, limit, endpoint);
             res.json(response);   
 
         }catch(error){
@@ -66,6 +67,9 @@ const filmsController = {
                     exclude: ["genre_id"]
                 }
             })
+
+            if(!film) return res.status(404).json({error: 'Not found'});
+
             let response ={
                 meta: {
                     satus:200,
